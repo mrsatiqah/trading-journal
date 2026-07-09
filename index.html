@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trading Journal - TizanaWorks</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>📈 Trading Journal</h1>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('add-trade')">Add Trade</button>
+            <button class="tab" onclick="showTab('calendar')">Calendar</button>
+            <button class="tab" onclick="showTab('trades')">All Trades</button>
+            <button class="tab" onclick="showTab('analytics')">Analytics</button>
+            <button class="tab" onclick="showTab('profile')">Profile</button>
+            <button class="tab" onclick="showTab('backup')">Backup</button>
+        </div>
+
+        <!-- Add Trade Tab -->
+        <div id="add-trade" class="tab-content active">
+            <div class="form-section">
+                <h2>Add New Trade</h2>
+                <form id="trade-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="date">Date</label>
+                            <input type="date" id="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="symbol">Symbol</label>
+                            <input type="text" id="symbol" placeholder="e.g., AAPL" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="side">Side</label>
+                            <select id="side" required>
+                                <option value="">Select Side</option>
+                                <option value="buy">Buy</option>
+                                <option value="sell">Sell</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="quantity">Quantity</label>
+                            <input type="number" id="quantity" min="1" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="entry-price">Entry Price</label>
+                            <input type="number" id="entry-price" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="exit-price">Exit Price</label>
+                            <input type="number" id="exit-price" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tick-value">Tick Value (RM per tick)</label>
+                            <input type="number" id="tick-value" step="0.01" placeholder="e.g., 25 (RM per tick)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="currency">Currency</label>
+                            <select id="currency" required>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="JPY">JPY</option>
+                                <option value="CAD">CAD</option>
+                                <option value="AUD">AUD</option>
+                                <option value="CHF">CHF</option>
+                                <option value="MYR">MYR</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="notes">Notes</label>
+                        <textarea id="notes" placeholder="Trade notes, strategy, lessons learned..."></textarea>
+                    </div>
+                    <button type="submit" class="btn">Add Trade</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Calendar Tab -->
+        <div id="calendar" class="tab-content">
+            <div class="calendar-header">
+                <div class="calendar-nav">
+                    <button class="nav-btn" onclick="changeMonth(-1)">← Previous</button>
+                    <h2 id="calendar-title"></h2>
+                    <button class="nav-btn" onclick="changeMonth(1)">Next →</button>
+                </div>
+            </div>
+            <div class="calendar" id="calendar-grid"></div>
+        </div>
+
+        <!-- All Trades Tab -->
+        <div id="trades" class="tab-content">
+            <div class="form-section">
+                <h2>All Trades</h2>
+                <div style="margin-bottom: 20px;">
+                    <input type="text" id="search-trades" placeholder="Search trades..." style="margin-right: 10px; margin-bottom: 10px;">
+                    <select id="filter-side" style="margin-bottom: 10px;">
+                        <option value="">All Sides</option>
+                        <option value="buy">Buy</option>
+                        <option value="sell">Sell</option>
+                    </select>
+                </div>
+                <div style="overflow-x: auto;">
+                    <table class="trades-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Symbol</th>
+                                <th>Side</th>
+                                <th>Qty</th>
+                                <th>Entry</th>
+                                <th>Exit</th>
+                                <th>P&L</th>
+                                <th>Currency</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trades-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Tab -->
+        <div id="analytics" class="tab-content">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="total-trades">0</div>
+                    <div class="stat-label">Total Trades</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="total-pnl">$0.00</div>
+                    <div class="stat-label">Total P&L</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="win-rate">0%</div>
+                    <div class="stat-label">Win Rate</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avg-trade">$0.00</div>
+                    <div class="stat-label">Avg Trade</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="current-balance">$0.00</div>
+                    <div class="stat-label">Current Balance</div>
+                </div>
+            </div>
+            
+            <div class="chart-section">
+                <h3>Profit & Loss Chart</h3>
+                <div class="chart-container">
+                    <canvas id="pnl-chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Tab -->
+        <div id="profile" class="tab-content">
+            <div class="form-section">
+                <h2>Trader Profile</h2>
+                <form id="setup-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="trader-name">Trader Name</label>
+                            <input type="text" id="trader-name" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="initial-balance">Initial Account Balance</label>
+                            <input type="number" id="initial-balance" step="0.01" placeholder="e.g., 10000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="starting-date">Trading Start Date</label>
+                            <input type="date" id="starting-date" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="default-currency">Default Currency</label>
+                            <select id="default-currency" required>
+                                <option value="USD">USD</option>
+                                <option value="EUR">EUR</option>
+                                <option value="GBP">GBP</option>
+                                <option value="JPY">JPY</option>
+                                <option value="CAD">CAD</option>
+                                <option value="AUD">AUD</option>
+                                <option value="CHF">CHF</option>
+                                <option value="MYR">MYR</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Save Profile</button>
+                </form>
+                
+                <div class="current-setup">
+                    <h3>Current Profile</h3>
+                    <div id="setup-display">
+                        <p>No profile configured yet.</p>
+                    </div>
+                </div>
+                
+                <div class="form-section" style="margin-top: 30px;">
+                    <h3>Account Management</h3>
+                    <div style="margin-bottom: 20px;">
+                        <button id="add-deposit-btn" class="btn" style="background: #28a745; margin-right: 10px;">💰 Add Deposit</button>
+                        <button id="add-withdrawal-btn" class="btn" style="background: #dc3545;">💸 Add Withdrawal</button>
+                    </div>
+                    
+                    <h4>Transaction History</h4>
+                    <div id="transactions-list">
+                        <p>No transactions recorded.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Backup Tab -->
+        <div id="backup" class="tab-content">
+            <div class="export-section">
+                <h3>Backup & Restore</h3>
+                <p>Export your trading data to JSON or CSV format for backup, or import existing data.</p>
+                
+                <div class="backup-buttons">
+                    <h4>Export Data</h4>
+                    <button class="btn" onclick="exportData('json')">Export as JSON</button>
+                    <button class="btn btn-secondary" onclick="exportData('csv')">Export as CSV</button>
+                    <button class="btn" onclick="exportToPDF()" style="background: #e74c3c;">Export as PDF</button>
+                </div>
+                
+                <div class="backup-buttons">
+                    <h4>Import Data</h4>
+                    <button class="btn btn-secondary" onclick="document.getElementById('import-json-file').click()">Import JSON</button>
+                    <button class="btn btn-secondary" onclick="document.getElementById('import-csv-file').click()">Import CSV</button>
+                    <input type="file" id="import-json-file" accept=".json" style="display: none;" onchange="importData(event, 'json')">
+                    <input type="file" id="import-csv-file" accept=".csv" style="display: none;" onchange="importData(event, 'csv')">
+                </div>
+                
+                <div class="backup-buttons">
+                    <h4>Clear Data</h4>
+                    <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Trade Modal -->
+    <div id="edit-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>Edit Trade</h2>
+            <form id="edit-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="edit-date">Date</label>
+                        <input type="date" id="edit-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-symbol">Symbol</label>
+                        <input type="text" id="edit-symbol" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-side">Side</label>
+                        <select id="edit-side" required>
+                            <option value="buy">Buy</option>
+                            <option value="sell">Sell</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-quantity">Quantity</label>
+                        <input type="number" id="edit-quantity" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-entry-price">Entry Price</label>
+                        <input type="number" id="edit-entry-price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-exit-price">Exit Price</label>
+                        <input type="number" id="edit-exit-price" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-tick-value">Tick Value (RM per tick)</label>
+                        <input type="number" id="edit-tick-value" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-currency">Currency</label>
+                        <select id="edit-currency" required>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                            <option value="GBP">GBP</option>
+                            <option value="JPY">JPY</option>
+                            <option value="CAD">CAD</option>
+                            <option value="AUD">AUD</option>
+                            <option value="CHF">CHF</option>
+                            <option value="MYR">MYR</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="edit-notes">Notes</label>
+                    <textarea id="edit-notes"></textarea>
+                </div>
+                <button type="submit" class="btn">Update Trade</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Notes Modal -->
+    <div id="notes-modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeNotesModal()">&times;</span>
+            <h2>Trade Notes</h2>
+            <div id="notes-content"></div>
+        </div>
+    </div>
+
+    <script src="tj.script.js"></script>
+</body>
+</html>
