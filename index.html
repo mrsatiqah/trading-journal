@@ -3,318 +3,398 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trading Journal by Mrs Atiqah</title>
+    <title>Trading Journal — Mrs Atiqah</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
+        :root {
+            --primary: #0D9488;
+            --primary-dark: #0B7A70;
+            --primary-light: #CCFBF1;
+            --secondary: #9333EA;
+            --secondary-light: #F3E8FF;
+            --tertiary: #EC4899;
+            --tertiary-light: #FCE7F3;
+            --bg: #F8FAFC;
+            --surface: #FFFFFF;
+            --success: #10B981;
+            --success-light: #ECFDF5;
+            --warning: #F59E0B;
+            --error: #EF4444;
+            --error-light: #FEF2F2;
+            --info: #3B82F6;
+            --text: #0F172A;
+            --text-dim: #64748B;
+            --border: #E2E8F0;
+            --radius-s: 8px;
+            --radius-m: 12px;
+            --radius-l: 18px;
+            --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+            --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.08);
+            --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.10);
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Inter', sans-serif;
             line-height: 1.6;
-            color: #333;
-            background: linear-gradient(135deg, #1abc9c 0%, #00b894 100%);
+            color: var(--text);
+            background: var(--bg);
             min-height: 100vh;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 20px;
-            background: white;
+            background: var(--surface);
             margin-top: 20px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border-radius: var(--radius-l);
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
         }
-        
+
         h1 {
             text-align: center;
-            color: #2c3e50;
-            margin-bottom: 30px;
-            font-size: 2.5rem;
+            margin-bottom: 4px;
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.5px;
         }
-        
+
+        .brand-tag {
+            display: block;
+            text-align: center;
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--primary);
+            margin-bottom: 30px;
+        }
+
         .tabs {
             display: flex;
             flex-wrap: wrap;
-            border-bottom: 2px solid #e9ecef;
+            border-bottom: 1px solid var(--border);
             margin-bottom: 30px;
-            gap: 5px;
+            gap: 4px;
+            background: var(--bg);
+            padding: 6px;
+            border-radius: var(--radius-m);
         }
-        
+
         .tab {
             padding: 12px 20px;
             border: none;
-            background: #f8f9fa;
-            color: #6c757d;
+            background: transparent;
+            color: var(--text-dim);
             cursor: pointer;
-            border-radius: 8px 8px 0 0;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            border-radius: var(--radius-s);
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.2s ease;
         }
-        
+
         .tab:hover {
-            background: #e9ecef;
-            color: #495057;
+            background: var(--surface);
+            color: var(--text);
         }
-        
+
         .tab.active {
-            background: #00b894;
+            background: var(--primary);
             color: white;
-            border-bottom: 2px solid #00b894;
+            box-shadow: var(--shadow-sm);
         }
-        
+
         .tab-content {
             display: none;
             animation: fadeIn 0.3s ease-in;
         }
-        
+
         .tab-content.active {
             display: block;
         }
-        
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
+
         .form-section {
-            background: #f8f9fa;
+            background: var(--surface);
             padding: 25px;
-            border-radius: 10px;
+            border-radius: var(--radius-m);
             margin-bottom: 20px;
+            border: 1px solid var(--border);
         }
-        
+
+        .form-section h2, .form-section h3 {
+            color: var(--text);
+            margin-bottom: 20px;
+            font-weight: 700;
+            font-size: 1.4rem;
+        }
+
         .form-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 20px;
         }
-        
+
         .form-group {
             display: flex;
             flex-direction: column;
         }
-        
+
         label {
-            margin-bottom: 5px;
+            margin-bottom: 6px;
             font-weight: 600;
-            color: #495057;
+            color: var(--text-dim);
+            font-size: 13px;
         }
-        
+
         input, select, textarea {
             padding: 12px;
-            border: 2px solid #dee2e6;
-            border-radius: 8px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-s);
             font-size: 14px;
-            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            background: var(--surface);
+            color: var(--text);
+            transition: all 0.2s ease;
         }
-        
+
         input:focus, select:focus, textarea:focus {
             outline: none;
-            border-color: #00b894;
-            box-shadow: 0 0 0 3px rgba(0, 184, 148, 0.1);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-light);
         }
-        
+
         textarea {
             resize: vertical;
             min-height: 100px;
         }
-        
+
         .btn {
-            background: #00b894;
+            background: var(--primary);
             color: white;
             padding: 12px 24px;
             border: none;
-            border-radius: 8px;
+            border-radius: var(--radius-s);
             cursor: pointer;
-            font-size: 16px;
+            font-size: 14px;
             font-weight: 600;
-            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.2s ease;
             display: inline-block;
             text-decoration: none;
         }
-        
+
         .btn:hover {
-            background: #00a085;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
+            background: var(--primary-dark);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
         }
-        
+
         .btn-secondary {
-            background: #6c757d;
+            background: transparent;
+            border: 1px solid var(--secondary);
+            color: var(--secondary);
         }
-        
+
         .btn-secondary:hover {
-            background: #5a6268;
+            background: var(--secondary-light);
+            transform: translateY(-1px);
         }
-        
+
         .btn-danger {
-            background: #dc3545;
+            background: var(--error);
         }
-        
+
         .btn-danger:hover {
-            background: #c82333;
+            background: #DC2626;
         }
-        
+
         .btn-small {
             padding: 6px 12px;
             font-size: 12px;
             margin: 0 2px;
         }
-        
+
         .trades-table {
             width: 100%;
             border-collapse: collapse;
-            background: white;
-            border-radius: 8px;
+            background: var(--surface);
+            border-radius: var(--radius-s);
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border: 1px solid var(--border);
         }
-        
+
         .trades-table th,
         .trades-table td {
             padding: 12px;
             text-align: left;
-            border-bottom: 1px solid #dee2e6;
+            border-bottom: 1px solid var(--border);
         }
-        
+
         .trades-table th {
-            background: #00b894;
+            background: var(--primary);
             color: white;
             font-weight: 600;
+            font-size: 13px;
         }
-        
+
         .trades-table tr:hover {
-            background: #f8f9fa;
+            background: var(--bg);
         }
-        
+
         .profit-positive {
-            color: #28a745;
+            color: var(--success);
             font-weight: 600;
         }
-        
+
         .profit-negative {
-            color: #dc3545;
+            color: var(--error);
             font-weight: 600;
         }
-        
+
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
-        
+
         .stat-card {
-         background: linear-gradient(135deg, #f39c12 0%, #f1c40f 100%);
-            color: white;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
             padding: 25px;
-            border-radius: 15px;
+            border-radius: var(--radius-m);
             text-align: center;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            transition: transform 0.3s ease;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
         }
-        
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            background: var(--primary);
+        }
+
         .stat-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
         }
-        
+
         .stat-value {
             font-size: 2rem;
-            font-weight: bold;
+            font-weight: 800;
             margin-bottom: 5px;
+            color: var(--text);
         }
-        
+
         .stat-label {
-            font-size: 0.9rem;
-            opacity: 0.9;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            font-weight: 500;
         }
-        
+
         .calendar {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             gap: 1px;
-            background: #dee2e6;
-            border-radius: 8px;
+            background: var(--border);
+            border-radius: var(--radius-s);
             overflow: hidden;
         }
-        
+
         .day-header {
-            background: #00b894;
+            background: var(--primary);
             color: white;
             padding: 15px 5px;
             text-align: center;
             font-weight: 600;
+            font-size: 13px;
         }
-        
+
         .day-cell {
-            background: white;
+            background: var(--surface);
             min-height: 100px;
             padding: 8px;
             position: relative;
         }
-        
+
         .day-cell.today {
-            background: #fff3cd;
-            border: 2px solid #ffc107;
+            background: var(--primary-light);
+            border: 2px solid var(--primary);
         }
-        
+
         .day-cell.other-month {
-            background: #f8f9fa;
-            color: #6c757d;
+            background: var(--bg);
+            color: var(--text-dim);
         }
-        
+
         .day-number {
             font-weight: 600;
             margin-bottom: 5px;
         }
-        
+
         .day-info {
             font-size: 0.8rem;
         }
-        
+
         .calendar-header {
             margin-bottom: 20px;
         }
-        
+
         .calendar-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-        
+
         .nav-btn {
-            background: #00b894;
+            background: var(--primary);
             color: white;
             border: none;
             padding: 10px 20px;
-            border-radius: 8px;
+            border-radius: var(--radius-s);
             cursor: pointer;
             font-weight: 600;
         }
-        
+
         .nav-btn:hover {
-            background: #00a085;
+            background: var(--primary-dark);
         }
-        
+
         .chart-section {
-            background: white;
+            background: var(--surface);
             padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            border-radius: var(--radius-m);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-sm);
         }
-        
+
         .chart-container {
             position: relative;
             height: 400px;
             margin-top: 20px;
         }
-        
+
         .modal {
             display: none;
             position: fixed;
@@ -323,88 +403,142 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.5);
+            background-color: rgba(15, 23, 42, 0.5);
         }
-        
+
         .modal-content {
-            background-color: white;
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow-lg);
             margin: 5% auto;
             padding: 30px;
-            border-radius: 10px;
+            border-radius: var(--radius-m);
             width: 90%;
             max-width: 600px;
             max-height: 80vh;
             overflow-y: auto;
         }
-        
+
+        .modal-content h2 {
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
         .close {
-            color: #aaa;
+            color: var(--text-dim);
             float: right;
             font-size: 28px;
             font-weight: bold;
             cursor: pointer;
         }
-        
+
         .close:hover {
-            color: #000;
+            color: var(--error);
         }
-        
+
         .setup-info {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
             margin-top: 20px;
         }
-        
+
         .setup-item {
-            background: white;
+            background: var(--bg);
             padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #00b894;
+            border-radius: var(--radius-s);
+            border-left: 4px solid var(--primary);
         }
-        
+
+        .setup-item strong {
+            color: var(--primary);
+        }
+
+        .current-setup h3 {
+            margin-bottom: 10px;
+            margin-top: 20px;
+            font-weight: 700;
+        }
+
         .backup-buttons {
             margin: 20px 0;
         }
-        
+
         .backup-buttons h4 {
             margin-bottom: 10px;
-            color: #495057;
+            color: var(--text-dim);
+            font-weight: 600;
         }
-        
+
         .export-section {
-            background: #f8f9fa;
+            background: var(--surface);
             padding: 25px;
-            border-radius: 10px;
+            border-radius: var(--radius-m);
+            border: 1px solid var(--border);
         }
-        
+
+        .export-section h3 {
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .notes-display {
+            background: var(--bg);
+            padding: 16px;
+            border-radius: var(--radius-s);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .notes-display h4 {
+            margin-bottom: 8px;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        .notes-display.empty {
+            border-left-color: var(--text-dim);
+            color: var(--text-dim);
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
                 padding: 15px;
             }
-            
+
             .tabs {
                 justify-content: center;
             }
-            
+
             .tab {
                 padding: 8px 12px;
-                font-size: 14px;
+                font-size: 13px;
             }
-            
+
             .form-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .stats-grid {
                 grid-template-columns: 1fr;
             }
-            
+
             .stat-value {
                 font-size: 1.5rem;
             }
-            
+
             h1 {
                 font-size: 2rem;
             }
@@ -413,8 +547,9 @@
 </head>
 <body>
     <div class="container">
-        <h1>📈 Trading Journal</h1>
-        
+        <h1>Trading Journal</h1>
+        <span class="brand-tag">Mrs Atiqah</span>
+
         <div class="tabs">
             <button class="tab active" onclick="showTab('add-trade', this)">Add Trade</button>
             <button class="tab" onclick="showTab('calendar', this)">Calendar</button>
@@ -436,7 +571,7 @@
                         </div>
                         <div class="form-group">
                             <label for="symbol">Symbol</label>
-                            <input type="text" id="symbol" placeholder="e.g., AAPL" required>
+                            <input type="text" id="symbol" placeholder="e.g., FCPO" required>
                         </div>
                         <div class="form-group">
                             <label for="side">Side</label>
@@ -465,6 +600,7 @@
                         <div class="form-group">
                             <label for="currency">Currency</label>
                             <select id="currency" required>
+                                <option value="MYR">MYR</option>
                                 <option value="USD">USD</option>
                                 <option value="EUR">EUR</option>
                                 <option value="GBP">GBP</option>
@@ -472,7 +608,6 @@
                                 <option value="CAD">CAD</option>
                                 <option value="AUD">AUD</option>
                                 <option value="CHF">CHF</option>
-                                <option value="MYR">MYR</option>
                             </select>
                         </div>
                     </div>
@@ -556,7 +691,7 @@
                     <div class="stat-label">Current Balance</div>
                 </div>
             </div>
-            
+
             <div class="chart-section">
                 <h3>Profit & Loss Chart</h3>
                 <div class="chart-container">
@@ -586,6 +721,7 @@
                         <div class="form-group">
                             <label for="default-currency">Default Currency</label>
                             <select id="default-currency" required>
+                                <option value="MYR">MYR</option>
                                 <option value="USD">USD</option>
                                 <option value="EUR">EUR</option>
                                 <option value="GBP">GBP</option>
@@ -593,13 +729,12 @@
                                 <option value="CAD">CAD</option>
                                 <option value="AUD">AUD</option>
                                 <option value="CHF">CHF</option>
-                                <option value="MYR">MYR</option>
                             </select>
                         </div>
                     </div>
                     <button type="submit" class="btn">Save Setup</button>
                 </form>
-                
+
                 <div class="current-setup">
                     <h3>Current Setup</h3>
                     <div id="setup-display">
@@ -613,15 +748,15 @@
         <div id="backup" class="tab-content">
             <div class="export-section">
                 <h3>Backup & Restore</h3>
-                <p>Export your trading data to JSON or CSV format for backup, or import existing data.</p>
-                
+                <p style="color: var(--text-dim);">Export your trading data to JSON or CSV format for backup, or import existing data.</p>
+
               <div class="backup-buttons">
     <h4>Export Data</h4>
     <button class="btn" onclick="exportData('json')">Export as JSON</button>
     <button class="btn btn-secondary" onclick="exportData('csv')">Export as CSV</button>
-    <button class="btn" onclick="exportData('pdf')" style="background: #dc3545;">Export as PDF</button>
+    <button class="btn btn-danger" onclick="exportData('pdf')">Export as PDF</button>
 </div>
-                
+
                 <div class="backup-buttons">
                     <h4>Import Data</h4>
                     <button class="btn btn-secondary" onclick="document.getElementById('import-json-file').click()">Import JSON</button>
@@ -629,7 +764,7 @@
                     <input type="file" id="import-json-file" accept=".json" style="display: none;" onchange="importData(event, 'json')">
                     <input type="file" id="import-csv-file" accept=".csv" style="display: none;" onchange="importData(event, 'csv')">
                 </div>
-                
+
                 <div class="backup-buttons">
                     <h4>Clear Data</h4>
                     <button class="btn btn-danger" onclick="clearAllData()">Clear All Data</button>
@@ -679,6 +814,7 @@
                     <div class="form-group">
                         <label for="edit-currency">Currency</label>
                         <select id="edit-currency" required>
+                            <option value="MYR">MYR</option>
                             <option value="USD">USD</option>
                             <option value="EUR">EUR</option>
                             <option value="GBP">GBP</option>
@@ -686,7 +822,6 @@
                             <option value="CAD">CAD</option>
                             <option value="AUD">AUD</option>
                             <option value="CHF">CHF</option>
-                            <option value="MYR">MYR</option>
                         </select>
                     </div>
                 </div>
@@ -737,23 +872,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Tab switching - FIXED
 function showTab(tabName, clickedElement) {
-    // Hide all tab contents
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
-    
-    // Remove active class from all tabs
+
     document.querySelectorAll('.tab').forEach(tab => {
         tab.classList.remove('active');
     });
-    
-    // Show the selected tab content
+
     document.getElementById(tabName).classList.add('active');
-    
-    // Add active class to clicked tab
     clickedElement.classList.add('active');
-    
-    // Handle tab-specific logic
+
     if (tabName === 'calendar') {
         renderCalendar();
     } else if (tabName === 'trades') {
@@ -808,13 +937,10 @@ function addTrade() {
         notes: document.getElementById('notes').value
     };
 
-    // Calculate P&L using tick value properly
-    // Price difference in points/ticks
-    const priceDifference = trade.side === 'buy' 
-        ? (trade.exitPrice - trade.entryPrice) 
+    const priceDifference = trade.side === 'buy'
+        ? (trade.exitPrice - trade.entryPrice)
         : (trade.entryPrice - trade.exitPrice);
-    
-    // P&L = Price difference × Tick Value × Quantity
+
     trade.pnl = priceDifference * trade.tickValue * trade.quantity;
 
     trades.push(trade);
@@ -844,12 +970,10 @@ function updateTrade() {
             notes: document.getElementById('edit-notes').value
         };
 
-        // Calculate P&L using tick value properly
-        const priceDifference = trade.side === 'buy' 
-            ? (trade.exitPrice - trade.entryPrice) 
+        const priceDifference = trade.side === 'buy'
+            ? (trade.exitPrice - trade.entryPrice)
             : (trade.entryPrice - trade.exitPrice);
-        
-        // P&L = Price difference × Tick Value × Quantity
+
         trade.pnl = priceDifference * trade.tickValue * trade.quantity;
 
         trades[tradeIndex] = trade;
@@ -866,10 +990,10 @@ function updateTrade() {
 function recalculateAllTrades() {
     trades.forEach(trade => {
         if (trade.tickValue && trade.entryPrice && trade.exitPrice) {
-            const priceDifference = trade.side === 'buy' 
-                ? (trade.exitPrice - trade.entryPrice) 
+            const priceDifference = trade.side === 'buy'
+                ? (trade.exitPrice - trade.entryPrice)
                 : (trade.entryPrice - trade.exitPrice);
-            
+
             trade.pnl = priceDifference * trade.tickValue * trade.quantity;
         }
     });
@@ -947,16 +1071,16 @@ function showTransactionForm(type) {
 function addTransaction(type, amount, notes) {
     const transaction = {
         id: Date.now(),
-        type: type, // 'deposit' or 'withdraw'
+        type: type,
         amount: amount,
         date: new Date().toISOString().split('T')[0],
         notes: notes,
         currency: setup.defaultCurrency || 'USD'
     };
-    
+
     transactions.push(transaction);
     saveData();
-    displayProfile(); // Refresh the profile display
+    displayProfile();
     updateAnalytics();
     alert(`${type.charAt(0).toUpperCase() + type.slice(1)} of ${transaction.currency} ${amount.toFixed(2)} added successfully!`);
 }
@@ -964,26 +1088,24 @@ function addTransaction(type, amount, notes) {
 function editTransaction(id) {
     const transaction = transactions.find(t => t.id === id);
     if (!transaction) return;
-    
-    // Show edit form with current values
+
     const newDate = prompt('Edit date (YYYY-MM-DD):', transaction.date);
     if (!newDate) return;
-    
+
     const newType = prompt('Edit type (deposit/withdraw):', transaction.type);
     if (!newType || (newType !== 'deposit' && newType !== 'withdraw')) {
         alert('Type must be either "deposit" or "withdraw"');
         return;
     }
-    
+
     const newAmount = prompt('Edit amount:', transaction.amount.toString());
     if (!newAmount || isNaN(newAmount) || parseFloat(newAmount) <= 0) {
         alert('Please enter a valid positive amount');
         return;
     }
-    
+
     const newNotes = prompt('Edit notes:', transaction.notes);
-    
-    // Update transaction
+
     const transactionIndex = transactions.findIndex(t => t.id === id);
     if (transactionIndex !== -1) {
         transactions[transactionIndex] = {
@@ -994,9 +1116,9 @@ function editTransaction(id) {
             notes: newNotes || '',
             currency: setup.defaultCurrency || 'USD'
         };
-        
+
         saveData();
-        displayProfile(); // Refresh the profile display
+        displayProfile();
         updateAnalytics();
         alert('Transaction updated successfully!');
     }
@@ -1006,15 +1128,13 @@ function deleteTransaction(id) {
     if (confirm('Are you sure you want to delete this transaction? This will affect your account balance.')) {
         transactions = transactions.filter(t => t.id !== id);
         saveData();
-        displayProfile(); // Refresh the profile display
+        displayProfile();
         updateAnalytics();
         alert('Transaction deleted successfully!');
     }
 }
 
 function renderTransactions() {
-    // This function is now handled by displayProfile() and renderTransactionsTable()
-    // Keep it for backward compatibility
     displayProfile();
 }
 
@@ -1035,12 +1155,11 @@ function saveSetup() {
 function displayProfile() {
     const setupDisplay = document.getElementById('setup-display');
     if (!setupDisplay) return;
-    
+
     if (setup.traderName) {
         const totalDeposits = transactions.filter(t => t.type === 'deposit').reduce((sum, t) => sum + t.amount, 0);
         const totalWithdrawals = transactions.filter(t => t.type === 'withdraw').reduce((sum, t) => sum + t.amount, 0);
-        const netTransactions = totalDeposits - totalWithdrawals;
-        
+
         setupDisplay.innerHTML = `
             <div class="setup-info">
                 <div class="setup-item">
@@ -1066,7 +1185,7 @@ function displayProfile() {
                     <br><button onclick="showTransactionForm('withdraw')" class="btn btn-small btn-danger" style="margin-top: 5px;">Add Withdrawal</button>
                 </div>
             </div>
-            
+
             <div style="margin-top: 20px;">
                 <h4>Transaction Management</h4>
                 <div id="transactions-list">
@@ -1074,8 +1193,7 @@ function displayProfile() {
                 </div>
             </div>
         `;
-        
-        // Pre-fill setup form
+
         document.getElementById('trader-name').value = setup.traderName;
         document.getElementById('initial-balance').value = setup.initialBalance;
         document.getElementById('starting-date').value = setup.startingDate;
@@ -1087,11 +1205,11 @@ function displayProfile() {
 
 function renderTransactionsTable() {
     if (transactions.length === 0) {
-        return '<p style="color: #6c757d; font-style: italic;">No deposits or withdrawals recorded.</p>';
+        return '<p style="color: var(--text-dim); font-style: italic;">No deposits or withdrawals recorded.</p>';
     }
-    
+
     const sortedTransactions = [...transactions].sort((a, b) => new Date(b.date) - new Date(a.date));
-    
+
     return `
         <table class="trades-table" style="margin-top: 10px;">
             <thead>
@@ -1107,7 +1225,7 @@ function renderTransactionsTable() {
                 ${sortedTransactions.map(transaction => `
                     <tr>
                         <td>${new Date(transaction.date).toLocaleDateString()}</td>
-                        <td style="color: ${transaction.type === 'deposit' ? '#28a745' : '#dc3545'}">
+                        <td class="${transaction.type === 'deposit' ? 'profit-positive' : 'profit-negative'}">
                             ${transaction.type.toUpperCase()}
                         </td>
                         <td class="${transaction.type === 'deposit' ? 'profit-positive' : 'profit-negative'}">
@@ -1137,30 +1255,27 @@ function renderTrades() {
         return matchesSearch && matchesSide;
     });
 
-    // Sort by date (newest first)
     filteredTrades.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     tbody.innerHTML = filteredTrades.map(trade => {
-        // Always recalculate P&L to ensure it uses correct tick value
         const entryPrice = parseFloat(trade.entryPrice);
         const exitPrice = parseFloat(trade.exitPrice);
         const tickValue = parseFloat(trade.tickValue) || 25;
         const quantity = parseInt(trade.quantity);
         const side = trade.side;
-        
-        const priceDifference = side === 'buy' 
-            ? (exitPrice - entryPrice) 
+
+        const priceDifference = side === 'buy'
+            ? (exitPrice - entryPrice)
             : (entryPrice - exitPrice);
         const calculatedPnL = priceDifference * tickValue * quantity;
-        
-        // Update the trade object with correct P&L
+
         trade.pnl = calculatedPnL;
-        
+
         return `
             <tr>
                 <td>${new Date(trade.date).toLocaleDateString()}</td>
                 <td>${trade.symbol}</td>
-                <td style="color: ${trade.side === 'buy' ? '#28a745' : '#dc3545'}">${trade.side.toUpperCase()}</td>
+                <td class="${trade.side === 'buy' ? 'profit-positive' : 'profit-negative'}">${trade.side.toUpperCase()}</td>
                 <td>${trade.quantity}</td>
                 <td>${trade.currency} ${trade.entryPrice.toFixed(2)}</td>
                 <td>${trade.currency} ${trade.exitPrice.toFixed(2)}</td>
@@ -1178,24 +1293,21 @@ function renderTrades() {
             </tr>
         `;
     }).join('');
-    
-    // Save updated trades with corrected P&L
+
     saveData();
 }
 
 function renderCalendar() {
     const calendar = document.getElementById('calendar-grid');
     const title = document.getElementById('calendar-title');
-    
+
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
                       'July', 'August', 'September', 'October', 'November', 'December'];
-    
+
     title.textContent = `${monthNames[currentMonth]} ${currentYear}`;
-    
-    // Clear calendar
+
     calendar.innerHTML = '';
-    
-    // Add day headers
+
     const dayHeaders = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     dayHeaders.forEach(day => {
         const dayHeader = document.createElement('div');
@@ -1203,14 +1315,12 @@ function renderCalendar() {
         dayHeader.textContent = day;
         calendar.appendChild(dayHeader);
     });
-    
-    // Get first day of month and number of days
+
     const firstDay = new Date(currentYear, currentMonth, 1);
     const lastDay = new Date(currentYear, currentMonth + 1, 0);
     const daysInMonth = lastDay.getDate();
     const startingDayOfWeek = firstDay.getDay();
-    
-    // Add previous month's trailing days
+
     const prevMonth = new Date(currentYear, currentMonth, 0);
     for (let i = startingDayOfWeek - 1; i >= 0; i--) {
         const dayCell = document.createElement('div');
@@ -1218,32 +1328,28 @@ function renderCalendar() {
         dayCell.innerHTML = `<div class="day-number">${prevMonth.getDate() - i}</div>`;
         calendar.appendChild(dayCell);
     }
-    
-    // Add current month's days
+
     const today = new Date();
     for (let day = 1; day <= daysInMonth; day++) {
         const dayCell = document.createElement('div');
         dayCell.className = 'day-cell';
-        
+
         const currentDate = new Date(currentYear, currentMonth, day);
         const dateStr = currentDate.toISOString().split('T')[0];
-        
-        // Check if it's today
+
         if (currentDate.toDateString() === today.toDateString()) {
             dayCell.classList.add('today');
         }
-        
-        // Get trades for this day and recalculate P&L
+
         const dayTrades = trades.filter(trade => trade.date === dateStr);
         const dayProfit = dayTrades.reduce((sum, trade) => {
-            // Ensure P&L is calculated correctly
-            const priceDifference = trade.side === 'buy' 
-                ? (trade.exitPrice - trade.entryPrice) 
+            const priceDifference = trade.side === 'buy'
+                ? (trade.exitPrice - trade.entryPrice)
                 : (trade.entryPrice - trade.exitPrice);
             const correctPnL = priceDifference * (trade.tickValue || 25) * trade.quantity;
             return sum + correctPnL;
         }, 0);
-        
+
         let dayInfo = '';
         if (dayTrades.length > 0) {
             dayInfo = `
@@ -1255,16 +1361,15 @@ function renderCalendar() {
                 </div>
             `;
         }
-        
+
         dayCell.innerHTML = `
             <div class="day-number">${day}</div>
             ${dayInfo}
         `;
-        
+
         calendar.appendChild(dayCell);
     }
-    
-    // Add next month's leading days
+
     const cellsUsed = startingDayOfWeek + daysInMonth;
     const cellsNeeded = Math.ceil(cellsUsed / 7) * 7;
     for (let day = 1; day <= cellsNeeded - cellsUsed; day++) {
@@ -1288,35 +1393,33 @@ function changeMonth(direction) {
 }
 
 function updateAnalytics() {
-    // Recalculate all trade P&Ls to ensure consistency with tick values
     trades.forEach(trade => {
         const entryPrice = parseFloat(trade.entryPrice);
         const exitPrice = parseFloat(trade.exitPrice);
         const tickValue = parseFloat(trade.tickValue) || 25;
         const quantity = parseInt(trade.quantity);
         const side = trade.side;
-        
+
         if (entryPrice && exitPrice && tickValue && quantity && side) {
-            const priceDifference = side === 'buy' 
-                ? (exitPrice - entryPrice) 
+            const priceDifference = side === 'buy'
+                ? (exitPrice - entryPrice)
                 : (entryPrice - exitPrice);
             trade.pnl = priceDifference * tickValue * quantity;
         }
     });
-    
+
     const totalTrades = trades.length;
     const totalPnl = trades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
     const winningTrades = trades.filter(trade => (trade.pnl || 0) > 0).length;
     const winRate = totalTrades > 0 ? (winningTrades / totalTrades * 100) : 0;
     const avgTrade = totalTrades > 0 ? (totalPnl / totalTrades) : 0;
-    
-    // Calculate current balance including deposits and withdrawals
+
     const totalDeposits = transactions.filter(t => t.type === 'deposit').reduce((sum, t) => sum + t.amount, 0);
     const totalWithdrawals = transactions.filter(t => t.type === 'withdraw').reduce((sum, t) => sum + t.amount, 0);
     const currentBalance = (setup.initialBalance || 0) + totalDeposits - totalWithdrawals + totalPnl;
-    
+
     const currency = setup.defaultCurrency || 'USD';
-    
+
     document.getElementById('total-trades').textContent = totalTrades;
     document.getElementById('total-pnl').textContent = `${currency} ${totalPnl.toFixed(2)}`;
     document.getElementById('total-pnl').className = `stat-value ${totalPnl >= 0 ? 'profit-positive' : 'profit-negative'}`;
@@ -1324,31 +1427,27 @@ function updateAnalytics() {
     document.getElementById('avg-trade').textContent = `${currency} ${avgTrade.toFixed(2)}`;
     document.getElementById('current-balance').textContent = `${currency} ${currentBalance.toFixed(2)}`;
     document.getElementById('current-balance').className = `stat-value ${currentBalance >= (setup.initialBalance || 0) ? 'profit-positive' : 'profit-negative'}`;
-    
-    // Save updated data
+
     saveData();
 }
 
 function renderChart() {
     const ctx = document.getElementById('pnl-chart');
     if (!ctx) return;
-    
-    // Sort trades by date
+
     const sortedTrades = [...trades].sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    // Calculate cumulative P&L including deposits and withdrawals
+
     let cumulativePnL = setup.initialBalance || 0;
     const chartData = [{
         date: setup.startingDate || new Date().toISOString().split('T')[0],
         balance: cumulativePnL
     }];
-    
-    // Add transactions and trades in chronological order
+
     const allEvents = [
         ...transactions.map(t => ({...t, type: t.type, eventType: 'transaction'})),
         ...sortedTrades.map(t => ({...t, eventType: 'trade'}))
     ].sort((a, b) => new Date(a.date) - new Date(b.date));
-    
+
     allEvents.forEach(event => {
         if (event.eventType === 'transaction') {
             if (event.type === 'deposit') {
@@ -1357,24 +1456,27 @@ function renderChart() {
                 cumulativePnL -= event.amount;
             }
         } else if (event.eventType === 'trade') {
-            // Ensure P&L is calculated correctly for chart
-            const priceDifference = event.side === 'buy' 
-                ? (event.exitPrice - event.entryPrice) 
+            const priceDifference = event.side === 'buy'
+                ? (event.exitPrice - event.entryPrice)
                 : (event.entryPrice - event.exitPrice);
             const tradePnL = priceDifference * (event.tickValue || 25) * event.quantity;
             cumulativePnL += tradePnL;
         }
-        
+
         chartData.push({
             date: event.date,
             balance: cumulativePnL
         });
     });
-    
+
     if (pnlChart) {
         pnlChart.destroy();
     }
-    
+
+    const gradientFill = ctx.getContext('2d').createLinearGradient(0, 0, 0, 400);
+    gradientFill.addColorStop(0, 'rgba(13, 148, 136, 0.25)');
+    gradientFill.addColorStop(1, 'rgba(13, 148, 136, 0.02)');
+
     pnlChart = new Chart(ctx, {
         type: 'line',
         data: {
@@ -1382,11 +1484,13 @@ function renderChart() {
             datasets: [{
                 label: 'Account Balance',
                 data: chartData.map(d => d.balance),
-                borderColor: '#00b894',
-                backgroundColor: 'rgba(0, 184, 148, 0.1)',
+                borderColor: '#0D9488',
+                backgroundColor: gradientFill,
                 borderWidth: 3,
                 fill: true,
-                tension: 0.4
+                tension: 0.4,
+                pointBackgroundColor: '#9333EA',
+                pointBorderColor: '#0D9488'
             }]
         },
         options: {
@@ -1395,22 +1499,28 @@ function renderChart() {
             plugins: {
                 legend: {
                     display: true,
-                    position: 'top'
+                    position: 'top',
+                    labels: { color: '#0F172A' }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: false,
                     ticks: {
+                        color: '#64748B',
                         callback: function(value) {
                             return (setup.defaultCurrency || 'USD') + ' ' + value.toLocaleString();
                         }
-                    }
+                    },
+                    grid: { color: '#E2E8F0' }
                 },
                 x: {
+                    ticks: { color: '#64748B' },
+                    grid: { color: '#E2E8F0' },
                     title: {
                         display: true,
-                        text: 'Date'
+                        text: 'Date',
+                        color: '#64748B'
                     }
                 }
             },
@@ -1456,8 +1566,7 @@ function loadData() {
                 startingDate: '',
                 defaultCurrency: 'USD'
             };
-            
-            // Recalculate P&L for all trades to ensure consistency
+
             recalculateAllTrades();
         } catch (error) {
             console.error('Error loading data:', error);
@@ -1498,10 +1607,8 @@ function exportData(format) {
 }
 
 function exportToPDF() {
-    // Create a new window with the printable content
     const printWindow = window.open('', '_blank');
-    
-    // Calculate analytics
+
     const totalTrades = trades.length;
     const totalPnl = trades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
     const winningTrades = trades.filter(trade => (trade.pnl || 0) > 0).length;
@@ -1512,175 +1619,170 @@ function exportToPDF() {
     const totalWithdrawals = transactions.filter(t => t.type === 'withdraw').reduce((sum, t) => sum + t.amount, 0);
     const currentBalance = (setup.initialBalance || 0) + totalDeposits - totalWithdrawals + totalPnl;
     const currency = setup.defaultCurrency || 'USD';
-    
-    // Sort trades by date (newest first)
+
     const sortedTrades = [...trades].sort((a, b) => new Date(b.date) - new Date(a.date));
-    
-    // Generate PDF content
+
     const htmlContent = `
     <!DOCTYPE html>
     <html>
     <head>
-        <title>Trading Journal Report</title>
+        <title>Trading Journal Report — Mrs Atiqah</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
         <style>
-            * {
-                margin: 0;
-                padding: 0;
-                box-sizing: border-box;
-            }
-            
+            * { margin: 0; padding: 0; box-sizing: border-box; }
+
             body {
-                font-family: 'Arial', sans-serif;
+                font-family: 'Inter', sans-serif;
                 line-height: 1.4;
-                color: #333;
+                color: #0F172A;
                 padding: 20px;
                 background: white;
             }
-            
+
             .header {
                 text-align: center;
                 margin-bottom: 30px;
-                padding: 20px;
-                background: linear-gradient(135deg, #1abc9c 0%, #00b894 100%);
+                padding: 25px;
+                background: #0D9488;
                 color: white;
-                border-radius: 10px;
+                border-radius: 12px;
             }
-            
+
             .header h1 {
                 font-size: 28px;
-                margin-bottom: 10px;
+                font-weight: 800;
+                margin-bottom: 8px;
             }
-            
+
             .header p {
-                font-size: 14px;
+                font-size: 13px;
                 opacity: 0.9;
             }
-            
+
             .section {
                 margin-bottom: 30px;
                 page-break-inside: avoid;
             }
-            
+
             .section h2 {
                 font-size: 20px;
-                color: #2c3e50;
+                font-weight: 700;
+                color: #0F172A;
                 margin-bottom: 15px;
                 padding-bottom: 5px;
-                border-bottom: 2px solid #00b894;
+                border-bottom: 2px solid #0D9488;
             }
-            
+
             .info-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
                 gap: 15px;
                 margin-bottom: 20px;
             }
-            
+
             .info-card {
-                background: #f8f9fa;
+                background: #F8FAFC;
                 padding: 15px;
                 border-radius: 8px;
-                border-left: 4px solid #00b894;
+                border-left: 4px solid #0D9488;
             }
-            
+
             .info-card h3 {
-                font-size: 14px;
-                color: #6c757d;
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #64748B;
                 margin-bottom: 5px;
             }
-            
+
             .info-card p {
                 font-size: 16px;
-                font-weight: bold;
-                color: #2c3e50;
+                font-weight: 700;
+                color: #0F172A;
             }
-            
+
             .stats-grid {
                 display: grid;
                 grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
                 gap: 15px;
                 margin-bottom: 20px;
             }
-            
+
             .stat-card {
-                background: #f8f9fa;
+                background: #F8FAFC;
                 padding: 15px;
                 border-radius: 8px;
                 text-align: center;
-                border: 1px solid #dee2e6;
+                border: 1px solid #E2E8F0;
             }
-            
+
             .stat-value {
                 font-size: 18px;
-                font-weight: bold;
+                font-weight: 700;
                 margin-bottom: 5px;
             }
-            
+
             .stat-label {
-                font-size: 12px;
-                color: #6c757d;
+                font-size: 11px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                color: #64748B;
             }
-            
-            .positive {
-                color: #28a745;
-            }
-            
-            .negative {
-                color: #dc3545;
-            }
-            
+
+            .positive { color: #10B981; }
+            .negative { color: #EF4444; }
+
             table {
                 width: 100%;
                 border-collapse: collapse;
                 margin-bottom: 20px;
                 font-size: 11px;
             }
-            
+
             th, td {
                 padding: 8px;
                 text-align: left;
-                border-bottom: 1px solid #dee2e6;
+                border-bottom: 1px solid #E2E8F0;
             }
-            
+
             th {
-                background: #00b894;
+                background: #0D9488;
                 color: white;
-                font-weight: bold;
+                font-weight: 600;
+                font-size: 10px;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
             }
-            
+
             tr:nth-child(even) {
-                background: #f8f9fa;
+                background: #F8FAFC;
             }
-            
+
             .notes-column {
                 max-width: 200px;
                 word-wrap: break-word;
                 font-size: 10px;
             }
-            
+
             .page-break {
                 page-break-before: always;
             }
-            
+
             @media print {
-                body {
-                    padding: 10px;
-                }
-                
+                body { padding: 10px; }
                 .header {
-                    background: #667eea !important;
+                    background: #0D9488 !important;
                     -webkit-print-color-adjust: exact;
                     color-adjust: exact;
                 }
-                
                 .info-card, .stat-card {
-                    background: #f8f9fa !important;
+                    background: #F8FAFC !important;
                     -webkit-print-color-adjust: exact;
                     color-adjust: exact;
                 }
-                
                 th {
-                    background: #00b894 !important;
+                    background: #0D9488 !important;
                     -webkit-print-color-adjust: exact;
                     color-adjust: exact;
                 }
@@ -1689,10 +1791,10 @@ function exportToPDF() {
     </head>
     <body>
         <div class="header">
-            <h1>📈 Trading Journal Report</h1>
-            <p>Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
+            <h1>Trading Journal Report</h1>
+            <p>Mrs Atiqah · Generated on ${new Date().toLocaleDateString()} at ${new Date().toLocaleTimeString()}</p>
         </div>
-        
+
         <div class="section">
             <h2>Account Information</h2>
             <div class="info-grid">
@@ -1722,7 +1824,7 @@ function exportToPDF() {
                 </div>
             </div>
         </div>
-        
+
         <div class="section">
             <h2>Trading Analytics</h2>
             <div class="stats-grid">
@@ -1760,7 +1862,7 @@ function exportToPDF() {
                 </div>
             </div>
         </div>
-        
+
         ${transactions.length > 0 ? `
         <div class="section">
             <h2>Transactions History</h2>
@@ -1777,7 +1879,7 @@ function exportToPDF() {
                     ${transactions.sort((a, b) => new Date(b.date) - new Date(a.date)).map(transaction => `
                         <tr>
                             <td>${new Date(transaction.date).toLocaleDateString()}</td>
-                            <td style="color: ${transaction.type === 'deposit' ? '#28a745' : '#dc3545'}">${transaction.type.toUpperCase()}</td>
+                            <td class="${transaction.type === 'deposit' ? 'positive' : 'negative'}">${transaction.type.toUpperCase()}</td>
                             <td class="${transaction.type === 'deposit' ? 'positive' : 'negative'}">
                                 ${transaction.type === 'deposit' ? '+' : '-'}${transaction.currency} ${transaction.amount.toFixed(2)}
                             </td>
@@ -1787,7 +1889,7 @@ function exportToPDF() {
                 </tbody>
             </table>
         </div>` : ''}
-        
+
         <div class="section page-break">
             <h2>All Trades</h2>
             <table>
@@ -1812,7 +1914,7 @@ function exportToPDF() {
                             <tr>
                                 <td>${new Date(trade.date).toLocaleDateString()}</td>
                                 <td><strong>${trade.symbol}</strong></td>
-                                <td style="color: ${trade.side === 'buy' ? '#28a745' : '#dc3545'}">${trade.side.toUpperCase()}</td>
+                                <td class="${trade.side === 'buy' ? 'positive' : 'negative'}">${trade.side.toUpperCase()}</td>
                                 <td>${trade.quantity}</td>
                                 <td>${trade.currency} ${trade.entryPrice.toFixed(2)}</td>
                                 <td>${trade.currency} ${trade.exitPrice.toFixed(2)}</td>
@@ -1828,15 +1930,15 @@ function exportToPDF() {
                 </tbody>
             </table>
         </div>
-        
+
         ${sortedTrades.filter(trade => trade.notes && trade.notes.trim()).length > 0 ? `
         <div class="section page-break">
             <h2>Trade Notes</h2>
             ${sortedTrades.filter(trade => trade.notes && trade.notes.trim()).map(trade => `
-                <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px; border-left: 4px solid ${(trade.pnl || 0) >= 0 ? '#28a745' : '#dc3545'};">
-                    <h4 style="margin-bottom: 10px; color: #2c3e50;">
-                        ${trade.symbol} - ${new Date(trade.date).toLocaleDateString()} 
-                        <span style="color: ${(trade.pnl || 0) >= 0 ? '#28a745' : '#dc3545'};">
+                <div style="margin-bottom: 20px; padding: 15px; background: #F8FAFC; border-radius: 8px; border-left: 4px solid ${(trade.pnl || 0) >= 0 ? '#10B981' : '#EF4444'};">
+                    <h4 style="margin-bottom: 10px; color: #0F172A; font-weight: 700;">
+                        ${trade.symbol} - ${new Date(trade.date).toLocaleDateString()}
+                        <span style="color: ${(trade.pnl || 0) >= 0 ? '#10B981' : '#EF4444'};">
                             (${(trade.pnl || 0) >= 0 ? '+' : ''}${trade.currency} ${(trade.pnl || 0).toFixed(2)})
                         </span>
                     </h4>
@@ -1844,19 +1946,18 @@ function exportToPDF() {
                 </div>
             `).join('')}
         </div>` : ''}
-        
-        <div style="margin-top: 30px; text-align: center; color: #6c757d; font-size: 12px;">
-            <p>Generated by TizanaWorks Trading Journal</p>
+
+        <div style="margin-top: 30px; text-align: center; color: #64748B; font-size: 12px;">
+            <p>Generated by Mrs Atiqah Trading Journal</p>
             <p>Report Date: ${new Date().toLocaleDateString()} ${new Date().toLocaleTimeString()}</p>
         </div>
     </body>
     </html>
     `;
-    
+
     printWindow.document.write(htmlContent);
     printWindow.document.close();
-    
-    // Wait for content to load, then print
+
     printWindow.onload = function() {
         setTimeout(() => {
             printWindow.print();
@@ -1896,11 +1997,11 @@ function importData(event, format) {
             } else if (format === 'csv') {
                 const lines = e.target.result.split('\n');
                 const importedTrades = [];
-                
+
                 for (let i = 1; i < lines.length; i++) {
                     const line = lines[i].trim();
                     if (!line) continue;
-                    
+
                     const columns = line.split(',');
                     if (columns.length >= 8) {
                         const trade = {
@@ -1919,7 +2020,7 @@ function importData(event, format) {
                         importedTrades.push(trade);
                     }
                 }
-                
+
                 if (importedTrades.length > 0) {
                     if (confirm(`Import ${importedTrades.length} trades? This will add to existing data.`)) {
                         trades = [...trades, ...importedTrades];
@@ -1950,7 +2051,7 @@ function clearAllData() {
 window.onclick = function(event) {
     const editModal = document.getElementById('edit-modal');
     const notesModal = document.getElementById('notes-modal');
-    
+
     if (event.target === editModal) {
         closeEditModal();
     }
