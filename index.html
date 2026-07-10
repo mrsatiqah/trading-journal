@@ -594,8 +594,12 @@
                             <input type="number" id="exit-price" step="0.01" required>
                         </div>
                         <div class="form-group">
+                            <label for="tick-size">Tick Size</label>
+                            <input type="number" id="tick-size" step="0.0001" placeholder="e.g., 0.01" required>
+                        </div>
+                        <div class="form-group">
                             <label for="tick-value">Tick Value</label>
-                            <input type="number" id="tick-value" step="0.01" placeholder="e.g., 0.01" required>
+                            <input type="number" id="tick-value" step="0.01" placeholder="e.g., 10" required>
                         </div>
                         <div class="form-group">
                             <label for="currency">Currency</label>
@@ -609,6 +613,14 @@
                                 <option value="AUD">AUD</option>
                                 <option value="CHF">CHF</option>
                             </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="commission">Commission</label>
+                            <input type="number" id="commission" step="0.01" placeholder="e.g., 4.00" value="0">
+                        </div>
+                        <div class="form-group">
+                            <label for="broker-fee">Broker Fee</label>
+                            <input type="number" id="broker-fee" step="0.01" placeholder="e.g., 2.00" value="0">
                         </div>
                     </div>
                     <div class="form-group">
@@ -654,7 +666,8 @@
                                 <th>Qty</th>
                                 <th>Entry</th>
                                 <th>Exit</th>
-                                <th>P&L</th>
+                                <th>Fees</th>
+                                <th>Net P&L</th>
                                 <th>Currency</th>
                                 <th>Notes</th>
                                 <th>Actions</th>
@@ -808,6 +821,10 @@
                         <input type="number" id="edit-exit-price" step="0.01" required>
                     </div>
                     <div class="form-group">
+                        <label for="edit-tick-size">Tick Size</label>
+                        <input type="number" id="edit-tick-size" step="0.0001" required>
+                    </div>
+                    <div class="form-group">
                         <label for="edit-tick-value">Tick Value</label>
                         <input type="number" id="edit-tick-value" step="0.01" required>
                     </div>
@@ -823,6 +840,14 @@
                             <option value="AUD">AUD</option>
                             <option value="CHF">CHF</option>
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-commission">Commission</label>
+                        <input type="number" id="edit-commission" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-broker-fee">Broker Fee</label>
+                        <input type="number" id="edit-broker-fee" step="0.01">
                     </div>
                 </div>
                 <div class="form-group">
@@ -857,12 +882,39 @@ let currentYear = new Date().getFullYear();
 let editingTradeId = null;
 let pnlChart = null;
 
+// Shared P&L calculation used everywhere (add, edit, table, calendar, analytics, chart, export)
+// Ticks moved = price difference / tick size, then multiplied by tick value and quantity.
+// Net P&L = gross P&L minus commission and broker fee.
+function calculatePnL(trade) {
+    const entryPrice = parseFloat(trade.entryPrice) || 0;
+    const exitPrice = parseFloat(trade.exitPrice) || 0;
+    const tickSize = parseFloat(trade.tickSize) || 0.01;
+    const tickValue = parseFloat(trade.tickValue) || 0;
+    const quantity = parseInt(trade.quantity) || 0;
+    const commission = parseFloat(trade.commission) || 0;
+    const brokerFee = parseFloat(trade.brokerFee) || 0;
+
+    const priceDifference = trade.side === 'buy'
+        ? (exitPrice - entryPrice)
+        : (entryPrice - exitPrice);
+
+    const ticksMoved = tickSize !== 0 ? (priceDifference / tickSize) : 0;
+    const grossPnl = ticksMoved * tickValue * quantity;
+    const totalFees = commission + brokerFee;
+    const netPnl = grossPnl - totalFees;
+
+    return { grossPnl, totalFees, netPnl };
+}
+
 // Initialize
 document.addEventListener('DOMContentLoaded', function() {
     loadData();
     document.getElementById('date').valueAsDate = new Date();
     document.getElementById('currency').value = setup.defaultCurrency || 'USD';
-    document.getElementById('tick-value').value = 25;
+    document.getElementById('tick-size').value = 0.01;
+    document.getElementById('tick-value').value = 10;
+    document.getElementById('commission').value = 0;
+    document.getElementById('broker-fee').value = 0;
     renderCalendar();
     renderTrades();
     updateAnalytics();
@@ -932,23 +984,28 @@ function addTrade() {
         quantity: parseInt(document.getElementById('quantity').value),
         entryPrice: parseFloat(document.getElementById('entry-price').value),
         exitPrice: parseFloat(document.getElementById('exit-price').value),
+        tickSize: parseFloat(document.getElementById('tick-size').value),
         tickValue: parseFloat(document.getElementById('tick-value').value),
         currency: document.getElementById('currency').value,
+        commission: parseFloat(document.getElementById('commission').value) || 0,
+        brokerFee: parseFloat(document.getElementById('broker-fee').value) || 0,
         notes: document.getElementById('notes').value
     };
 
-    const priceDifference = trade.side === 'buy'
-        ? (trade.exitPrice - trade.entryPrice)
-        : (trade.entryPrice - trade.exitPrice);
-
-    trade.pnl = priceDifference * trade.tickValue * trade.quantity;
+    const { grossPnl, totalFees, netPnl } = calculatePnL(trade);
+    trade.grossPnl = grossPnl;
+    trade.totalFees = totalFees;
+    trade.pnl = netPnl;
 
     trades.push(trade);
     saveData();
     document.getElementById('trade-form').reset();
     document.getElementById('date').valueAsDate = new Date();
     document.getElementById('currency').value = setup.defaultCurrency || 'USD';
-    document.getElementById('tick-value').value = 25;
+    document.getElementById('tick-size').value = 0.01;
+    document.getElementById('tick-value').value = 10;
+    document.getElementById('commission').value = 0;
+    document.getElementById('broker-fee').value = 0;
     renderTrades();
     updateAnalytics();
     alert('Trade added successfully!');
@@ -965,16 +1022,18 @@ function updateTrade() {
             quantity: parseInt(document.getElementById('edit-quantity').value),
             entryPrice: parseFloat(document.getElementById('edit-entry-price').value),
             exitPrice: parseFloat(document.getElementById('edit-exit-price').value),
+            tickSize: parseFloat(document.getElementById('edit-tick-size').value),
             tickValue: parseFloat(document.getElementById('edit-tick-value').value),
             currency: document.getElementById('edit-currency').value,
+            commission: parseFloat(document.getElementById('edit-commission').value) || 0,
+            brokerFee: parseFloat(document.getElementById('edit-broker-fee').value) || 0,
             notes: document.getElementById('edit-notes').value
         };
 
-        const priceDifference = trade.side === 'buy'
-            ? (trade.exitPrice - trade.entryPrice)
-            : (trade.entryPrice - trade.exitPrice);
-
-        trade.pnl = priceDifference * trade.tickValue * trade.quantity;
+        const { grossPnl, totalFees, netPnl } = calculatePnL(trade);
+        trade.grossPnl = grossPnl;
+        trade.totalFees = totalFees;
+        trade.pnl = netPnl;
 
         trades[tradeIndex] = trade;
         saveData();
@@ -990,11 +1049,15 @@ function updateTrade() {
 function recalculateAllTrades() {
     trades.forEach(trade => {
         if (trade.tickValue && trade.entryPrice && trade.exitPrice) {
-            const priceDifference = trade.side === 'buy'
-                ? (trade.exitPrice - trade.entryPrice)
-                : (trade.entryPrice - trade.exitPrice);
+            // Backward compatibility: older trades saved before Tick Size / fees existed
+            if (trade.tickSize === undefined) trade.tickSize = 0.01;
+            if (trade.commission === undefined) trade.commission = 0;
+            if (trade.brokerFee === undefined) trade.brokerFee = 0;
 
-            trade.pnl = priceDifference * trade.tickValue * trade.quantity;
+            const { grossPnl, totalFees, netPnl } = calculatePnL(trade);
+            trade.grossPnl = grossPnl;
+            trade.totalFees = totalFees;
+            trade.pnl = netPnl;
         }
     });
     saveData();
@@ -1010,8 +1073,11 @@ function editTrade(id) {
         document.getElementById('edit-quantity').value = trade.quantity;
         document.getElementById('edit-entry-price').value = trade.entryPrice;
         document.getElementById('edit-exit-price').value = trade.exitPrice;
-        document.getElementById('edit-tick-value').value = trade.tickValue || 25;
+        document.getElementById('edit-tick-size').value = trade.tickSize || 0.01;
+        document.getElementById('edit-tick-value').value = trade.tickValue || 10;
         document.getElementById('edit-currency').value = trade.currency || 'USD';
+        document.getElementById('edit-commission').value = trade.commission || 0;
+        document.getElementById('edit-broker-fee').value = trade.brokerFee || 0;
         document.getElementById('edit-notes').value = trade.notes;
         document.getElementById('edit-modal').style.display = 'block';
     }
@@ -1030,11 +1096,20 @@ function deleteTrade(id) {
 function viewNotes(id) {
     const trade = trades.find(t => t.id === id);
     if (trade) {
+        const { grossPnl, totalFees, netPnl } = calculatePnL(trade);
         const notesContent = document.getElementById('notes-content');
+        const breakdown = `
+            <div style="margin-bottom: 15px; font-size: 13px; color: var(--text-dim);">
+                <div>Gross P&L: <span class="${grossPnl >= 0 ? 'profit-positive' : 'profit-negative'}">${grossPnl >= 0 ? '+' : ''}${trade.currency} ${grossPnl.toFixed(2)}</span></div>
+                <div>Fees (Commission + Broker): <span class="profit-negative">-${trade.currency} ${totalFees.toFixed(2)}</span></div>
+                <div>Net P&L: <span class="${netPnl >= 0 ? 'profit-positive' : 'profit-negative'}">${netPnl >= 0 ? '+' : ''}${trade.currency} ${netPnl.toFixed(2)}</span></div>
+            </div>
+        `;
         if (trade.notes && trade.notes.trim()) {
             notesContent.innerHTML = `
                 <div class="notes-display">
                     <h4>Trade: ${trade.symbol} - ${new Date(trade.date).toLocaleDateString()}</h4>
+                    ${breakdown}
                     <p>${trade.notes}</p>
                 </div>
             `;
@@ -1042,6 +1117,7 @@ function viewNotes(id) {
             notesContent.innerHTML = `
                 <div class="notes-display empty">
                     <h4>Trade: ${trade.symbol} - ${new Date(trade.date).toLocaleDateString()}</h4>
+                    ${breakdown}
                     <p>No notes available for this trade.</p>
                 </div>
             `;
@@ -1258,18 +1334,11 @@ function renderTrades() {
     filteredTrades.sort((a, b) => new Date(b.date) - new Date(a.date));
 
     tbody.innerHTML = filteredTrades.map(trade => {
-        const entryPrice = parseFloat(trade.entryPrice);
-        const exitPrice = parseFloat(trade.exitPrice);
-        const tickValue = parseFloat(trade.tickValue) || 25;
-        const quantity = parseInt(trade.quantity);
-        const side = trade.side;
+        const { grossPnl, totalFees, netPnl } = calculatePnL(trade);
 
-        const priceDifference = side === 'buy'
-            ? (exitPrice - entryPrice)
-            : (entryPrice - exitPrice);
-        const calculatedPnL = priceDifference * tickValue * quantity;
-
-        trade.pnl = calculatedPnL;
+        trade.grossPnl = grossPnl;
+        trade.totalFees = totalFees;
+        trade.pnl = netPnl;
 
         return `
             <tr>
@@ -1279,8 +1348,9 @@ function renderTrades() {
                 <td>${trade.quantity}</td>
                 <td>${trade.currency} ${trade.entryPrice.toFixed(2)}</td>
                 <td>${trade.currency} ${trade.exitPrice.toFixed(2)}</td>
-                <td class="${calculatedPnL >= 0 ? 'profit-positive' : 'profit-negative'}">
-                    ${calculatedPnL >= 0 ? '+' : ''}${trade.currency} ${calculatedPnL.toFixed(2)}
+                <td>${trade.currency} ${totalFees.toFixed(2)}</td>
+                <td class="${netPnl >= 0 ? 'profit-positive' : 'profit-negative'}">
+                    ${netPnl >= 0 ? '+' : ''}${trade.currency} ${netPnl.toFixed(2)}
                 </td>
                 <td>${trade.currency}</td>
                 <td>
@@ -1343,11 +1413,8 @@ function renderCalendar() {
 
         const dayTrades = trades.filter(trade => trade.date === dateStr);
         const dayProfit = dayTrades.reduce((sum, trade) => {
-            const priceDifference = trade.side === 'buy'
-                ? (trade.exitPrice - trade.entryPrice)
-                : (trade.entryPrice - trade.exitPrice);
-            const correctPnL = priceDifference * (trade.tickValue || 25) * trade.quantity;
-            return sum + correctPnL;
+            const { netPnl } = calculatePnL(trade);
+            return sum + netPnl;
         }, 0);
 
         let dayInfo = '';
@@ -1394,17 +1461,11 @@ function changeMonth(direction) {
 
 function updateAnalytics() {
     trades.forEach(trade => {
-        const entryPrice = parseFloat(trade.entryPrice);
-        const exitPrice = parseFloat(trade.exitPrice);
-        const tickValue = parseFloat(trade.tickValue) || 25;
-        const quantity = parseInt(trade.quantity);
-        const side = trade.side;
-
-        if (entryPrice && exitPrice && tickValue && quantity && side) {
-            const priceDifference = side === 'buy'
-                ? (exitPrice - entryPrice)
-                : (entryPrice - exitPrice);
-            trade.pnl = priceDifference * tickValue * quantity;
+        if (trade.entryPrice && trade.exitPrice && trade.tickValue && trade.quantity && trade.side) {
+            const { grossPnl, totalFees, netPnl } = calculatePnL(trade);
+            trade.grossPnl = grossPnl;
+            trade.totalFees = totalFees;
+            trade.pnl = netPnl;
         }
     });
 
@@ -1456,11 +1517,8 @@ function renderChart() {
                 cumulativePnL -= event.amount;
             }
         } else if (event.eventType === 'trade') {
-            const priceDifference = event.side === 'buy'
-                ? (event.exitPrice - event.entryPrice)
-                : (event.entryPrice - event.exitPrice);
-            const tradePnL = priceDifference * (event.tickValue || 25) * event.quantity;
-            cumulativePnL += tradePnL;
+            const { netPnl } = calculatePnL(event);
+            cumulativePnL += netPnl;
         }
 
         chartData.push({
@@ -1595,10 +1653,10 @@ function exportData(format) {
         const jsonString = JSON.stringify(data, null, 2);
         downloadFile(jsonString, 'trading-journal-backup.json', 'application/json');
     } else if (format === 'csv') {
-        let csv = 'Date,Symbol,Side,Quantity,Entry Price,Exit Price,P&L,Currency,Notes\n';
+        let csv = 'Date,Symbol,Side,Quantity,Entry Price,Exit Price,Tick Size,Tick Value,Commission,Broker Fee,Gross P&L,Net P&L,Currency,Notes\n';
         trades.forEach(trade => {
-            const pnl = trade.pnl || 0;
-            csv += `${trade.date},${trade.symbol},${trade.side},${trade.quantity},${trade.entryPrice},${trade.exitPrice},${pnl.toFixed(2)},${trade.currency},"${trade.notes.replace(/"/g, '""')}"\n`;
+            const { grossPnl, netPnl } = calculatePnL(trade);
+            csv += `${trade.date},${trade.symbol},${trade.side},${trade.quantity},${trade.entryPrice},${trade.exitPrice},${trade.tickSize || 0.01},${trade.tickValue},${trade.commission || 0},${trade.brokerFee || 0},${grossPnl.toFixed(2)},${netPnl.toFixed(2)},${trade.currency},"${trade.notes.replace(/"/g, '""')}"\n`;
         });
         downloadFile(csv, 'trading-journal-trades.csv', 'text/csv');
     } else if (format === 'pdf') {
@@ -1609,8 +1667,16 @@ function exportData(format) {
 function exportToPDF() {
     const printWindow = window.open('', '_blank');
 
+    trades.forEach(trade => {
+        const { grossPnl, totalFees, netPnl } = calculatePnL(trade);
+        trade.grossPnl = grossPnl;
+        trade.totalFees = totalFees;
+        trade.pnl = netPnl;
+    });
+
     const totalTrades = trades.length;
     const totalPnl = trades.reduce((sum, trade) => sum + (trade.pnl || 0), 0);
+    const totalFeesAll = trades.reduce((sum, trade) => sum + (trade.totalFees || 0), 0);
     const winningTrades = trades.filter(trade => (trade.pnl || 0) > 0).length;
     const losingTrades = trades.filter(trade => (trade.pnl || 0) < 0).length;
     const winRate = totalTrades > 0 ? (winningTrades / totalTrades * 100) : 0;
@@ -1860,6 +1926,10 @@ function exportToPDF() {
                     <div class="stat-value">${totalTrades > 0 ? ((totalPnl / totalTrades) * 100).toFixed(2) : '0.00'}%</div>
                     <div class="stat-label">ROI per Trade</div>
                 </div>
+                <div class="stat-card">
+                    <div class="stat-value negative">${currency} ${totalFeesAll.toFixed(2)}</div>
+                    <div class="stat-label">Total Fees Paid</div>
+                </div>
             </div>
         </div>
 
@@ -1901,8 +1971,10 @@ function exportToPDF() {
                         <th>Qty</th>
                         <th>Entry</th>
                         <th>Exit</th>
+                        <th>Tick Size</th>
                         <th>Tick Value</th>
-                        <th>P&L</th>
+                        <th>Fees</th>
+                        <th>Net P&L</th>
                         <th>Currency</th>
                         <th class="notes-column">Notes</th>
                     </tr>
@@ -1910,6 +1982,7 @@ function exportToPDF() {
                 <tbody>
                     ${sortedTrades.map(trade => {
                         const pnl = trade.pnl || 0;
+                        const fees = trade.totalFees || 0;
                         return `
                             <tr>
                                 <td>${new Date(trade.date).toLocaleDateString()}</td>
@@ -1918,7 +1991,9 @@ function exportToPDF() {
                                 <td>${trade.quantity}</td>
                                 <td>${trade.currency} ${trade.entryPrice.toFixed(2)}</td>
                                 <td>${trade.currency} ${trade.exitPrice.toFixed(2)}</td>
-                                <td>${trade.currency} ${(trade.tickValue || 25).toFixed(2)}</td>
+                                <td>${(trade.tickSize || 0.01)}</td>
+                                <td>${trade.currency} ${(trade.tickValue || 0).toFixed(2)}</td>
+                                <td>${trade.currency} ${fees.toFixed(2)}</td>
                                 <td class="${pnl >= 0 ? 'positive' : 'negative'}">
                                     ${pnl >= 0 ? '+' : ''}${trade.currency} ${pnl.toFixed(2)}
                                 </td>
@@ -2003,7 +2078,8 @@ function importData(event, format) {
                     if (!line) continue;
 
                     const columns = line.split(',');
-                    if (columns.length >= 8) {
+                    if (columns.length >= 14) {
+                        // New format: Date,Symbol,Side,Quantity,Entry,Exit,Tick Size,Tick Value,Commission,Broker Fee,Gross P&L,Net P&L,Currency,Notes
                         const trade = {
                             id: Date.now() + i,
                             date: columns[0],
@@ -2012,11 +2088,39 @@ function importData(event, format) {
                             quantity: parseInt(columns[3]),
                             entryPrice: parseFloat(columns[4]),
                             exitPrice: parseFloat(columns[5]),
-                            pnl: parseFloat(columns[6]),
+                            tickSize: parseFloat(columns[6]) || 0.01,
+                            tickValue: parseFloat(columns[7]) || 0,
+                            commission: parseFloat(columns[8]) || 0,
+                            brokerFee: parseFloat(columns[9]) || 0,
+                            currency: columns[12],
+                            notes: columns[13] ? columns[13].replace(/"/g, '') : ''
+                        };
+                        const { grossPnl, totalFees, netPnl } = calculatePnL(trade);
+                        trade.grossPnl = grossPnl;
+                        trade.totalFees = totalFees;
+                        trade.pnl = netPnl;
+                        importedTrades.push(trade);
+                    } else if (columns.length >= 8) {
+                        // Legacy format fallback: Date,Symbol,Side,Quantity,Entry,Exit,P&L,Currency,Notes
+                        const trade = {
+                            id: Date.now() + i,
+                            date: columns[0],
+                            symbol: columns[1],
+                            side: columns[2],
+                            quantity: parseInt(columns[3]),
+                            entryPrice: parseFloat(columns[4]),
+                            exitPrice: parseFloat(columns[5]),
                             currency: columns[7],
                             notes: columns[8] ? columns[8].replace(/"/g, '') : '',
-                            tickValue: 25
+                            tickSize: 0.01,
+                            tickValue: 10,
+                            commission: 0,
+                            brokerFee: 0
                         };
+                        const { grossPnl, totalFees, netPnl } = calculatePnL(trade);
+                        trade.grossPnl = grossPnl;
+                        trade.totalFees = totalFees;
+                        trade.pnl = netPnl;
                         importedTrades.push(trade);
                     }
                 }
