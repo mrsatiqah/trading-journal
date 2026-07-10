@@ -447,7 +447,7 @@
             background: var(--bg);
             padding: 15px;
             border-radius: var(--radius-s);
-            border-left: 4px solid var(--primary);
+            border: 1px solid var(--primary);
         }
 
         .setup-item strong {
@@ -486,7 +486,7 @@
             background: var(--bg);
             padding: 16px;
             border-radius: var(--radius-s);
-            border-left: 4px solid var(--secondary);
+            border: 1px solid var(--secondary);
         }
 
         .notes-display h4 {
@@ -496,7 +496,7 @@
         }
 
         .notes-display.empty {
-            border-left-color: var(--text-dim);
+            border-color: var(--border);
             color: var(--text-dim);
         }
 
@@ -1685,7 +1685,7 @@ function exportToPDF() {
                 background: #F8FAFC;
                 padding: 15px;
                 border-radius: 8px;
-                border-left: 4px solid #0D9488;
+                border: 1px solid #0D9488;
             }
 
             .info-card h3 {
@@ -1935,7 +1935,7 @@ function exportToPDF() {
         <div class="section page-break">
             <h2>Trade Notes</h2>
             ${sortedTrades.filter(trade => trade.notes && trade.notes.trim()).map(trade => `
-                <div style="margin-bottom: 20px; padding: 15px; background: #F8FAFC; border-radius: 8px; border-left: 4px solid ${(trade.pnl || 0) >= 0 ? '#10B981' : '#EF4444'};">
+                <div style="margin-bottom: 20px; padding: 15px; background: #F8FAFC; border-radius: 8px; border: 1px solid ${(trade.pnl || 0) >= 0 ? '#10B981' : '#EF4444'};">
                     <h4 style="margin-bottom: 10px; color: #0F172A; font-weight: 700;">
                         ${trade.symbol} - ${new Date(trade.date).toLocaleDateString()}
                         <span style="color: ${(trade.pnl || 0) >= 0 ? '#10B981' : '#EF4444'};">
